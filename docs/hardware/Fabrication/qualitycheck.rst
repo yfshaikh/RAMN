@@ -50,7 +50,10 @@ Step 5: Test the headlights
 ###########################
 
 Move the headlights switch (in D square) from the leftmost position to the rightmost position. When moving the switch between positions, the bottom of the screen should show "CL", "LB", then "HB".
-   
+
+.. warning::
+
+	If the screen shows something else, then it is possible that your switch was soldered with the **wrong orientiation**. Refer to the picture above for the correct orientation when the switch is at the leftmost position.
 
 Step 6: Test Chassis
 ####################

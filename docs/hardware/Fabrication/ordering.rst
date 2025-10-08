@@ -131,6 +131,8 @@ You can identify the correct orientation of each component from the pictures abo
 	- SW1 (Shift Joystick): the notch should be on the opposite side of the silkscreen word "SHIFT" (it is barely visible in the picture above).
 	- SW3 (Lighting Switch): the notch on the knob should be on the side of the pin header (see picture above). There are four possible positions for this switch; if you are shown a picture where the notch is parallel to the pin header, then it should be on the opposite side of the hand brake switch.
 
+	You can find another picture in the :ref:`qualitycheck` section.
+
 Below are clarifications based on past questions from fabs:
 
 - Orientation of D8 on 4_body PCB is as specified by the graphics at the bottom-right of the PCB's silkscreen (same orientation for all LEDs; K up and A down). The dot near the bottom of D8 is just art, it does not indicate the cathode.
