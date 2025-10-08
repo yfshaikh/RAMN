@@ -21,29 +21,35 @@ You can use **SAMTEC SSQ-113-03-G-D** connectors to create new expansions stacka
 To get started, we recommend that you make a copy of the debugger expansion in the `hardware/V1_revB/5_debugger` folder and modify it with `KiCAD <https://www.kicad.org/>`_.
 This expansion uses the stackable **SAMTEC SSQ-113-03-G-D** connector, and already features all possible signals - simply delete what you do not need.
 
+The following pins are connected to power supplies:
+
+- **Pin 1:** 3V3 (unique per ECU).
+- **Pin 2:** 5V (directly connected to USB, common to all ECUs).
+- **Pin 4:** Ground.
+
 The following pins are **actively used** by the original RAMN expansions:
 
-- **PA1 :** ADC (ECU B, C, D).
-- **PA4 :** ADC (ECU B, C, D).
-- **PA5 :** ADC (ECU B, C, D).
-- **PB2 :**  GPIO output, CS pin for SPI2 communications (display for ECU A, LED driver for ECU D).
-- **PB12:** GPIO output, ST7789 display DC pin (ECU A) or LED driver LE pin (ECU D).
-- **PB13:** SPI2 SCK (ECU A, D).
-- **PB14:** SPI2 MISO (ECU A) - currently unused but reserved for future use.
-- **PB15:** SPI2 MOSI (ECU A, D).
+- **Pin 3  (PA1):** ADC (ECU B, C, D) - *connected but unused by ECU D*.
+- **Pin 7  (PA4):** ADC (ECU B, C, D).
+- **Pin 8  (PA5):** ADC (ECU B, C).
+- **Pin 13 (PB2):** CS pin for SPI2 communications (ECU A display or ECU D LED driver).
+- **Pin 16 (PB12):** GPIO output, ST7789 display DC pin (ECU A) or LED driver LE pin (ECU D).
+- **Pin 17 (PB13):** SPI2 SCK (ECU A, D).
+- **Pin 18 (PB14):** SPI2 MISO (ECU A) - *currently unused but reserved for future use*.
+- **Pin 19 (PB15):** SPI2 MOSI (ECU A, D).
 
 The following pins are always **free and can be used to create new expansions** compatible with any RAMN ECU.
 **Some pins are pre-configured for your convenience, but you may use them in any configuration you want:**
 
-- **PA2 :** 	free, pre-configured as LPUART1_TX.
-- **PA3 :** 	free, pre-configured as LPUART1_RX.
-- **PA6 :** 	free.
-- **PA7 :** 	free.
-- **PB0 :** 	free.
-- **PB1 :** 	free.
-- **PB10:** 	free, pre-configured as I2C2_SCL.
-- **PB11:** 	free, pre-configured as I2C2_SDA.
-- **PA8  :** 	free, pre-configured as additional SPI CS pin.
+- **Pin 5 (PA2):** 	free, pre-configured as LPUART1_TX.
+- **Pin 6 (PA3):** 	free, pre-configured as LPUART1_RX.
+- **Pin 9 (PA6):** 	free.
+- **Pin 10 (PA7):** 	free.
+- **Pin 11 (PB0):** 	free.
+- **Pin 12 (PB1):** 	free.
+- **Pin 14 (PB10):** 	free, pre-configured as I2C2_SCL.
+- **Pin 15 (PB11):** 	free, pre-configured as I2C2_SDA.
+- **Pin 20 (PA8):** 	free, pre-configured as additional SPI CS pin.
 
 Although **PB13**, **PB14**, and **PB15** are already used, SPI protocol supports multiplexing, so you can reuse them for your expansion too, but only for SPI communications.
 You only need to assign one **CS pin** per SPI device that you want to connect, and reuse the already defined **SPI2 SCK (PB13)**, **SPI2 MOSI (PB15)**, and **SPI2 MISO (PB14)** pins.
@@ -68,7 +74,7 @@ Typically, you can use the following interfaces:
 	
 	- OCTOSPI1 cannot be used simultaneously with I2C2.
 	- For ECU A and D, SPI2 can only be used in master mode.
-	- If you want to use the (currently unused) SD Card reader on ECU A, you need to use PB10 as the SD Card SPI CS pin.
+	- If you want to use the (currently unused) SD Card reader on ECU A's screen expansion, you need to use PB10 as the SD Card SPI CS pin.
 
 If the available pins are not enough, **consider making expansions compatible with only one ECU** (e.g., you can make an expansion that reassigns **PA1**, **PA2** and **PA5**, but that expansion will only be compatible with ECU A, and you will need to use a different peripheral configuration for ECU A).
 
