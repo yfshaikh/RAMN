@@ -1858,18 +1858,16 @@ void RAMN_ErrorTaskFunc(void *argument)
 {
   /* USER CODE BEGIN RAMN_ErrorTaskFunc */
 	/* Infinite loop */
-#if defined(ENABLE_USB)
 	//TODO: report Errors to GS_USB
 	FDCAN_ErrorCountersTypeDef errorCount;
 	FDCAN_ProtocolStatusTypeDef protocolStatus;
 	RAMN_FDCAN_Status_t gw_freeze;
 	uint32_t err;
-#endif
+
 	for(;;)
 	{
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 		// Read all data in a critical section for consistent readings
-#if defined(ENABLE_USB)
 		taskENTER_CRITICAL();
 		err = HAL_FDCAN_GetError(&hfdcan1);
 		HAL_FDCAN_GetProtocolStatus(&hfdcan1,&protocolStatus);
@@ -1888,7 +1886,7 @@ void RAMN_ErrorTaskFunc(void *argument)
 		}
 
 		taskEXIT_CRITICAL();
-#endif
+
 #if defined(ENABLE_USB) && defined(ENABLE_USB_DEBUG)
 		if (RAMN_DEBUG_ENABLE == True) RAMN_DEBUG_PrintCANError(&errorCount, &protocolStatus, &gw_freeze, err);
 #endif
@@ -1900,6 +1898,7 @@ void RAMN_ErrorTaskFunc(void *argument)
 #if defined(AUTO_RECOVER_BUSOFF)
 		if (protocolStatus.BusOff != 0U)
 		{
+			osDelay(100);
 			RAMN_FDCAN_ResetPeripheral();
 		}
 #endif
@@ -1908,7 +1907,6 @@ void RAMN_ErrorTaskFunc(void *argument)
 		// Normally, we should only require it if protocolStatus.Activity == FDCAN_COM_STATE_TX, but it is safer to notify the thread whatever the error is.
 		/* if (protocolStatus.Activity == FDCAN_COM_STATE_TX) */
 		xTaskNotifyGive(RAMN_SendCANHandle);
-
 	}
   /* USER CODE END RAMN_ErrorTaskFunc */
 }
