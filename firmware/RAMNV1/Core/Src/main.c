@@ -473,9 +473,7 @@ int main(void)
 #ifndef RENODE_SIM
 	MX_RNG_Init();
 #endif
-#ifndef RENODE_SIM
 	MX_FDCAN1_Init();
-#endif
 	MX_SPI2_Init();
 	MX_ADC1_Init();
 	MX_IWDG_Init();
@@ -588,9 +586,7 @@ int main(void)
 	RAMN_RNG_Init(&hrng);
 #endif
 	RAMN_CRC_Init(&hcrc);
-#ifndef RENODE_SIM
 	RAMN_FDCAN_Init(&hfdcan1, &RAMN_SendCANHandle, &RAMN_ErrorTaskHandle);
-#endif
 
 #ifdef USE_TRNG_BUFFER
 	// Enable TRNG module

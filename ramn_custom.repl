@@ -43,6 +43,13 @@ gpioC: GPIOPort.STM32_GPIOPort @ sysbus <0x42020800, +0x400>
 usart1: UART.STM32F7_USART @ sysbus 0x40013800
     -> nvic@37
 
-// Note: CAN-FD, USB, and other complex peripherals are not included
+// LPUART1 for RAMN debugging
+lpuart1: UART.STM32F7_USART @ sysbus <0x40008000, +0x400> { frequency: 16000000; IRQ -> nvic@70 }
+
+// FDCAN1 for CAN bus functionality
+fdcan1: CAN.MCAN @ sysbus 0x4000A400
+    -> nvic@19
+
+// Note: USB and other complex peripherals are not included
 // as they require custom implementation
 
