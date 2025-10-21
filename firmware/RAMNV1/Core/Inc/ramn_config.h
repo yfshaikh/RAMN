@@ -24,9 +24,9 @@
 // You need to specify which ECU you are trying to debug here.
 // This define is only used for debugging - the build scripts in scripts/build will override this define.
 #define TARGET_ECUA
-//#define TARGET_ECUB
-//#define TARGET_ECUC
-//#define TARGET_ECUD
+// #define TARGET_ECUB
+// #define TARGET_ECUC
+// #define TARGET_ECUD
 #endif
 
 // See comments at the end of file if you want to use the internal oscillator instead of the external crystal.
@@ -36,14 +36,14 @@
 // By default, this will generate compile errors that you will need to address by removing relevant defines or commenting out the #error lines.
 // Note that the USB CLI will be active but not accessible unless you make the "#" command available again (by editing ramn_cdc.c).
 // UDS over USB (slcan command "%" is accessible by default, but you may want to remove it (also by editing ramn_cdc.c) to further limit attack surfaces.
-//#define HARDENING
+// #define HARDENING
 
 // CONFIGURATION OF ECU A ------------------------------------------------------
 
 #if defined(TARGET_ECUA)
-//#define ENABLE_ADC
-#define ENABLE_USB
-#define ENABLE_CDC // USB serial (CDC) interface
+// #define ENABLE_ADC
+// #define ENABLE_USB
+// #define ENABLE_CDC // USB serial (CDC) interface
 
 // Enable this flag to enable the candlelight interface (gs_usb drivers)
 // Current implementation is experimental:
@@ -51,22 +51,22 @@
 // - CAN-FD is not supported
 // - Due to clock differences, bit timings are not respected (but equivalent baudrates are used)
 // Try increasing _Min_Stack_Size if you run into issues
-//#define ENABLE_GSUSB
+// #define ENABLE_GSUSB
 
-#ifndef ENABLE_GSUSB
-#define USBD_VID                        0x483
-#define USBD_PID                        0x5740
-#else
+// #ifndef ENABLE_GSUSB
+// #define USBD_VID 0x483
+// #define USBD_PID 0x5740
+// #else
 // IDs below automatically load the drivers on Linux and are required for userspace python-can drivers
-#define USBD_VID                        0x1d50
-#define USBD_PID                        0x606f
-#endif
+#define USBD_VID 0x1d50
+#define USBD_PID 0x606f
+// #endif
 
-#define USBD_LANGID_STRING            	1033
-#define USBD_MANUFACTURER_STRING      	"Toyota Motor Corporation"
-#define USBD_PRODUCT_STRING           	"RAMN USB Composite Device"
-#define USBD_CONFIGURATION_STRING     	"MDC Config"
-#define USBD_INTERFACE_STRING         	"MDC Interface"
+#define USBD_LANGID_STRING 1033
+#define USBD_MANUFACTURER_STRING "Toyota Motor Corporation"
+#define USBD_PRODUCT_STRING "RAMN USB Composite Device"
+#define USBD_CONFIGURATION_STRING "MDC Config"
+#define USBD_INTERFACE_STRING "MDC Interface"
 
 // Enable SPI (for screen control)
 #define ENABLE_SPI
@@ -84,8 +84,8 @@
 #define ENABLE_UDS_REPROGRAMMING
 #define ENABLE_UDS
 #define ENABLE_J1979
-//#define ENABLE_KWP
-//#define ENABLE_XCP
+// #define ENABLE_KWP
+// #define ENABLE_XCP
 #define RTR_DEMO_ID 0x700
 
 // ECU will monitor joystick CAN messages and generate events such as PRESSED and RELEASED.
@@ -106,7 +106,7 @@
 
 // Will start the usb serial interface in CLI mode instead of slcan if enabled.
 // If used with HARDENING, make sure you make the "#" slcan command available again.
-//#define START_IN_CLI_MODE
+// #define START_IN_CLI_MODE
 
 // Define this flag to let ECU A process slcan message that it receives as regular RX messages (and update their value on screen, for example).
 // This is useful to demonstrate the impact of CAN fuzzing on ECU A's screen when using ECU A's slcan interface, even though ECU A did not actually receive the fuzzed CAN message (since it was the transmitter).
@@ -114,32 +114,31 @@
 
 // Define this flag to enable the USB debugging module.
 // Note that it also needs to be activated by a slcan command, or by setting RAMN_DEBUG_ENABLE in ramn_debug.c to True.
-#define ENABLE_USB_DEBUG
+// #define ENABLE_USB_DEBUG
 
 // Number of times to retry entering bootloader mode of another ECU before giving up
 #define BOOTLOADER_MAX_ATTEMPTS 20
 
-
 #ifdef ENABLE_GSUSB
-#define GSUSB_RECV_QUEUE_SIZE 	512 // Size of the GSUSB receive queue (uint32_t elements)
-#define GSUSB_POOL_QUEUE_SIZE 	512 // Size of the GSUSB pool queue (uint32_t elements)
-#define GSUSB_SEND_QUEUE_SIZE 	512 // Size of the GSUSB send queue (uint32_t elements)
-#define GS_HOST_FRAME_SIZE     	80
-#define CAN_QUEUE_SIZE			512
+#define GSUSB_RECV_QUEUE_SIZE 512 // Size of the GSUSB receive queue (uint32_t elements)
+#define GSUSB_POOL_QUEUE_SIZE 512 // Size of the GSUSB pool queue (uint32_t elements)
+#define GSUSB_SEND_QUEUE_SIZE 512 // Size of the GSUSB send queue (uint32_t elements)
+#define GS_HOST_FRAME_SIZE 80
+#define CAN_QUEUE_SIZE 512
 #endif
-#define GSUSB_DFU_INTERFACE_STRING_FS		(uint8_t*) "RAMN gs_usb interface"
+#define GSUSB_DFU_INTERFACE_STRING_FS (uint8_t *)"RAMN gs_usb interface"
 
 #endif
 
 // CONFIGURATION OF ECU B ------------------------------------------------------
 
 #if defined(TARGET_ECUB)
-//#define ENABLE_SCREEN
+// #define ENABLE_SCREEN
 #define ENABLE_ADC
 #define EXPANSION_CHASSIS
 
 // Define flag below to indicate that the steering wheel potentiometer is of the logarithmic type.
-//#define CHASSIS_LOGARITHMIC_POTENTIOMETER
+// #define CHASSIS_LOGARITHMIC_POTENTIOMETER
 #if !defined(CHASSIS_LOGARITHMIC_POTENTIOMETER) && !defined(CHASSIS_LINEAR_POTENTIOMETER)
 // If CHASSIS_LINEAR_POTENTIOMETER not defined by build script, consider Log as default
 #define CHASSIS_LOGARITHMIC_POTENTIOMETER
@@ -148,7 +147,7 @@
 #define ENABLE_UDS_REPROGRAMMING
 #define ENABLE_UDS
 #define ENABLE_J1979
-//#define ENABLE_KWP
+// #define ENABLE_KWP
 #define ENABLE_XCP
 #define RTR_DEMO_ID 0x701
 #endif
@@ -156,17 +155,16 @@
 // CONFIGURATION OF ECU C ------------------------------------------------------
 
 #if defined(TARGET_ECUC)
-//#define ENABLE_SCREEN
+// #define ENABLE_SCREEN
 #define ENABLE_ADC
 #define EXPANSION_POWERTRAIN
 #define ENABLE_UDS_REPROGRAMMING
 #define ENABLE_UDS
 #define ENABLE_J1979
-//#define ENABLE_KWP
+// #define ENABLE_KWP
 #define ENABLE_XCP
 #define RTR_DEMO_ID 0x702
 #endif
-
 
 // CONFIGURATION OF ECU D ------------------------------------------------------
 
@@ -181,7 +179,7 @@
 #define ENABLE_UDS_REPROGRAMMING
 #define ENABLE_UDS
 #define ENABLE_J1979
-//#define ENABLE_KWP
+// #define ENABLE_KWP
 #define ENABLE_XCP
 #define RTR_DEMO_ID 0x703
 
@@ -195,7 +193,7 @@
 #define SIM_LOOP_CLOCK_MS 10
 
 // Enable watchdogs - Application needs to kick it every 1s.
-//#define WATCHDOG_ENABLE
+// #define WATCHDOG_ENABLE
 
 // Will make ECU accept broadcasted UDS commands.
 // CAN ID must be defined in ramn_vehicle_specific.h.
@@ -215,7 +213,7 @@
 // If this flag is enabled, ECU A will repeat whatever message it accepts over USB.
 // May be useful when multiplexing the serial interface, but should typically not be used.
 // CAN_ECHO does not cover ECU A CAN messages not sent from USB (i.e., answer to UDS commands).
-//#define CAN_ECHO
+// #define CAN_ECHO
 
 // This flag can be used to automatically reset CAN/CAN-FD peripheral if it enters bus-off mode.
 // #define AUTO_RECOVER_BUSOFF
@@ -241,10 +239,10 @@
 
 // Enable the UART interface
 // /!\ CURRENTLY UNTESTED
-// #define ENABLE_UART
+#define ENABLE_UART
 
 // Enable this flag to force code to while(1) when encountering errors that could typically be ignored.
-//#define HANG_ON_ERRORS
+// #define HANG_ON_ERRORS
 
 // Enable this flag to automatically enable memory protection at startup. Once activated, it can only be removed by bootloader/usb commands.
 // Avoid using if you are not sure what you are doing.
@@ -256,15 +254,15 @@
 #define RDP_OPTIONBYTE OB_RDP_LEVEL_1
 
 // If this is defined, the TRNG module will fill a stream buffer with random bytes instead of calling the HAL library.
-//#define USE_TRNG_BUFFER
+// #define USE_TRNG_BUFFER
 
 // TRNG pool settings (if used)
-#define TRNG_POOL_SIZE 	   				256
-#define JOYSTICK_POOL_SIZE				10
+#define TRNG_POOL_SIZE 256
+#define JOYSTICK_POOL_SIZE 10
 
 #ifdef ENABLE_I2C
-#define I2C_RX_BUFFER_SIZE				(16)
-#define I2C_TX_BUFFER_SIZE				(4)
+#define I2C_RX_BUFFER_SIZE (16)
+#define I2C_TX_BUFFER_SIZE (4)
 #endif
 
 #ifdef ENABLE_UART
@@ -273,19 +271,18 @@
 // You should define the size of working buffers (for currently processed command/answers) and of stream buffers (where all commands/queued are queued and waiting for transmission).
 
 // Working buffer
-#define UART_RX_COMMAND_BUFFER_SIZE			128 //This is the maximum length of a command to receive, used by both TASK and ISR
-#define UART_TX_COMMAND_BUFFER_SIZE			128 //This is the maximum length of a command to send back
+#define UART_RX_COMMAND_BUFFER_SIZE 128 // This is the maximum length of a command to receive, used by both TASK and ISR
+#define UART_TX_COMMAND_BUFFER_SIZE 128 // This is the maximum length of a command to send back
 
 // Stream buffer
-#define UART_RX_BUFFER_SIZE 				512
-#define UART_TX_BUFFER_SIZE 				512
+#define UART_RX_BUFFER_SIZE 512
+#define UART_TX_BUFFER_SIZE 512
 
 #if (UART_RX_COMMAND_BUFFER_SIZE > UART_RX_BUFFER_SIZE) || (UART_TX_COMMAND_BUFFER_SIZE > UART_TX_BUFFER_SIZE)
 #error command size should be smaller than stream buffer size
 #endif
 
 #endif
-
 
 #if defined(ENABLE_UDS) || defined(ENABLE_KWP) || defined(ENABLE_XCP)
 #define ENABLE_DIAG
@@ -300,29 +297,29 @@
 #define ENABLE_ISOTP
 #endif
 
-#define ISOTP_RXBUFFER_SIZE 			4096
-#define ISOTP_TXBUFFER_SIZE 			4096
-#define ISOTP_CONSECUTIVE_BLOCK_SIZE 	0
-#define ISOTP_CONSECUTIVE_ST 			0
+#define ISOTP_RXBUFFER_SIZE 4096
+#define ISOTP_TXBUFFER_SIZE 4096
+#define ISOTP_CONSECUTIVE_BLOCK_SIZE 0
+#define ISOTP_CONSECUTIVE_ST 0
 
 // ISO-TP Timeout values. Both should be set to 1000 to mimic real ECUs.
-#define ISOTP_RX_TIMEOUT_MS 			200000
-#define ISOTP_TX_TIMEOUT_MS 			200000
+#define ISOTP_RX_TIMEOUT_MS 200000
+#define ISOTP_TX_TIMEOUT_MS 200000
 
 // Timeout for extended diagnostic session.
 // By default, other session types do not time out, although they would on real ECUs.
-#define UDS_SESSION_TIMEOUT_MS 				5000
+#define UDS_SESSION_TIMEOUT_MS 5000
 
 // Maximum RPM that will allow a transition to diagnostic sessions.
 // Can be used to emulate a "Conditions not correct" error when the vehicle is running in Carla.
-#define UDS_MAXIMUM_RPM_ACCEPTABLE 			0xFFF
+#define UDS_MAXIMUM_RPM_ACCEPTABLE 0xFFF
 
 // Delay before accepting a new security access attempt.
 // This delay also applies to minimum time between ECU boot and first attempt.
-#define SECURITY_ACCESS_RETRY_TIMEOUT_MS 	10
+#define SECURITY_ACCESS_RETRY_TIMEOUT_MS 10
 
 // Maximum Security access attempts before locking device.
-#define SECURITY_ACCESS_MAX_ATTEMPTS 		5
+#define SECURITY_ACCESS_MAX_ATTEMPTS 5
 
 // Enable this flag to ignore ISO TP messages that are not padded (like real ECUs do).
 // When this flag is enabled, the ECU only checks that ISO-TP CAN message size is 8, it does not check the value of the padding bytes.
@@ -334,28 +331,28 @@
 // #define ISOTP_ANSWER_PADDING_BYTE 0x00
 
 #ifdef ENABLE_CDC
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
-#define USB_COMMAND_BUFFER_SIZE		(8195)
+#define APP_RX_DATA_SIZE 2048
+#define APP_TX_DATA_SIZE 2048
+#define USB_COMMAND_BUFFER_SIZE (8195)
 #endif
 
 #ifdef TARGET_ECUA
-#define USB_RX_BUFFER_SIZE 				15000
-#define USB_TX_BUFFER_SIZE 				15000
-#define CAN_RX_BUFFER_SIZE 				15000
-#define CAN_TX_BUFFER_SIZE 				15000
-#define UDS_ISOTP_RX_BUFFER_SIZE 		0xFFF+2 //Add +2 for buffer-size
-#define UDS_ISOTP_TX_BUFFER_SIZE 		0xFFF+2
+#define USB_RX_BUFFER_SIZE 15000
+#define USB_TX_BUFFER_SIZE 15000
+#define CAN_RX_BUFFER_SIZE 15000
+#define CAN_TX_BUFFER_SIZE 15000
+#define UDS_ISOTP_RX_BUFFER_SIZE 0xFFF + 2 // Add +2 for buffer-size
+#define UDS_ISOTP_TX_BUFFER_SIZE 0xFFF + 2
 
 #else
-#define CAN_RX_BUFFER_SIZE 				20480
-#define CAN_TX_BUFFER_SIZE 				20480
-#define UDS_ISOTP_RX_BUFFER_SIZE 		(4097*6)
-#define UDS_ISOTP_TX_BUFFER_SIZE 		(4097*6)
-#define KWP_ISOTP_RX_BUFFER_SIZE 		(4097*6)
-#define KWP_ISOTP_TX_BUFFER_SIZE 		(4097*6)
-#define XCP_RX_BUFFER_SIZE 				(4000)
-#define XCP_TX_BUFFER_SIZE 				(4000)
+#define CAN_RX_BUFFER_SIZE 20480
+#define CAN_TX_BUFFER_SIZE 20480
+#define UDS_ISOTP_RX_BUFFER_SIZE (4097 * 6)
+#define UDS_ISOTP_TX_BUFFER_SIZE (4097 * 6)
+#define KWP_ISOTP_RX_BUFFER_SIZE (4097 * 6)
+#define KWP_ISOTP_TX_BUFFER_SIZE (4097 * 6)
+#define XCP_RX_BUFFER_SIZE (4000)
+#define XCP_TX_BUFFER_SIZE (4000)
 #endif
 
 // This Extended ID is set as a hardware filter example event when CTF is disabled.
@@ -367,18 +364,16 @@
 #define CTF_STANDARD_ID_4 0x458
 #endif
 
-
-
 // Check for bad configurations --------------------------------------
 
 #ifdef ENABLE_CDC
-#if USB_RX_BUFFER_SIZE < (USB_COMMAND_BUFFER_SIZE+2)
+#if USB_RX_BUFFER_SIZE < (USB_COMMAND_BUFFER_SIZE + 2)
 #error define a larger USB_RX_BUFFER_SIZE
 #endif
 #endif
 
 #if defined(TARGET_ECUA) + defined(TARGET_ECUB) + defined(TARGET_ECUC) + defined(TARGET_ECUD) != 1
-    #error "You must define only one of TARGET_ECUA, TARGET_ECUB, TARGET_ECUC, and TARGET_ECUD."
+#error "You must define only one of TARGET_ECUA, TARGET_ECUB, TARGET_ECUC, and TARGET_ECUD."
 #endif
 
 #if defined(ENABLE_UART) && defined(ENABLE_CDC)
@@ -436,7 +431,6 @@
 #error "You may want to disable EEPROM to limit potential memory issues. Comment out this line to enable anyway."
 #endif
 #endif
-
 
 // To use the internal oscillator (instead of the default external 10MHz crystal), You should modify RAMNV1.ioc so that:
 // - PLL Source Mux uses HSI with *N = X 10
