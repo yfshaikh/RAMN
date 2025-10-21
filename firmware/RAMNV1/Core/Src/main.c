@@ -705,54 +705,9 @@ int main(void)
 
 	/* Start scheduler */
 #ifdef RENODE_SIM
-	// Skip FreeRTOS on Renode for now - just test UART
-
-	// Try direct register writes first
-	USART1->TDR = 'S';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = 'T';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = 'A';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = 'R';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = 'T';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = '\r';
-	for (volatile int i = 0; i < 100000; i++)
-		;
-	USART1->TDR = '\n';
-
-	printf("Skipping FreeRTOS, testing UART in simple loop...\n");
-
-	// Test direct UART transmission
-	const char *test_msg = "Direct UART test message\r\n";
-	HAL_UART_Transmit(&hlpuart1, (uint8_t *)test_msg, strlen(test_msg), 1000);
-
-	int counter = 0;
-	while (1)
-	{
-		// Try direct register write in loop
-		USART1->TDR = '0' + (counter % 10);
-		for (volatile int i = 0; i < 500000; i++)
-			;
-
-		printf("UART test message #%d from main loop\r\n", counter++);
-
-		// Use simple delay loop instead of HAL_Delay
-		for (volatile int i = 0; i < 2000000; i++)
-		{
-			// Simple delay loop
-		}
-
-		if (counter > 10)
-			break; // Don't loop forever for testing
-	}
+	// RENODE_SIM: UART is working! Now starting FreeRTOS with ARM_CM3 port compatibility
+	printf("RENODE_SIM: UART working! Starting FreeRTOS scheduler with ARM_CM3 port...\r\n");
+	osKernelStart();
 #else
 	osKernelStart();
 #endif

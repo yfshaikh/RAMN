@@ -1,3 +1,5 @@
+#ifndef RENODE_SIM /* Exclude ARM_CM33_NTZ portasm when using RENODE_SIM */
+
 /*
  * FreeRTOS Kernel V10.3.1
  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
@@ -311,3 +313,5 @@ void SVC_Handler(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
 		"svchandler_address_const: .word vPortSVCHandler_C	\n");
 }
 /*-----------------------------------------------------------*/
+
+#endif /* RENODE_SIM */
