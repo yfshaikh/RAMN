@@ -29,6 +29,7 @@
 #include "queue.h"
 #include "stm32l5xx_hal_rng.h" // contains RNG peripheral error codes
 #include "ramn_debug.h"
+#include <string.h>
 #ifdef ENABLE_USB
 #include "ramn_usb.h"
 #endif
@@ -439,25 +440,11 @@ int main(void)
 	/* USER CODE BEGIN Init */
 
 #ifdef RENODE_SIM
-	// Minimal Renode path for STM32L5 USART map: CR1@0x00, BRR@0x0C, TDR@0x28
-	volatile uint32_t *const USART_CR1 = (uint32_t *)(0x40008000u + 0x00u);
-	volatile uint32_t *const USART_BRR = (uint32_t *)(0x40008000u + 0x0Cu);
-	volatile uint32_t *const USART_TDR = (uint32_t *)(0x40008000u + 0x28u);
-
-	*USART_CR1 = (1u << 13) | (1u << 3); // UE | TE
-	*USART_BRR = 0x1u;					 // minimal baud divider
-
-	const char msg[] = "Hello from RAMN\r";
-	for (;;)
-	{
-		for (unsigned i = 0; i < (sizeof(msg) - 1); ++i)
-		{
-			*USART_TDR = (uint32_t)msg[i];
-		}
-		for (volatile uint32_t d = 0; d < 800000; ++d)
-		{
-		}
-	}
+	// RENODE_SIM is defined - this should appear in UART output
+	printf("RENODE_SIM is defined! Starting scheduler...\n");
+#else
+	// RENODE_SIM is NOT defined
+	printf("RENODE_SIM is NOT defined!\n");
 #endif
 
 #if defined(TARGET_ECUA)
@@ -483,14 +470,63 @@ int main(void)
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_ICACHE_Init();
+#ifndef RENODE_SIM
 	MX_RNG_Init();
+#endif
+#ifndef RENODE_SIM
 	MX_FDCAN1_Init();
+#endif
 	MX_SPI2_Init();
 	MX_ADC1_Init();
 	MX_IWDG_Init();
 	MX_CRC_Init();
 	MX_I2C2_Init();
 	MX_LPUART1_UART_Init();
+
+#ifdef RENODE_SIM
+	// Debug UART configuration - but we need to use direct register access since printf might not work yet
+
+	// Fix USART1 configuration for Renode
+	if (hlpuart1.Instance == USART1)
+	{
+		// Enable USART1 clock
+		__HAL_RCC_USART1_CLK_ENABLE();
+
+		// Enable USART1 transmitter and receiver
+		USART1->CR1 |= USART_CR1_TE | USART_CR1_RE | USART_CR1_UE;
+
+		// Wait for USART to be ready
+		while (!(USART1->ISR & USART_ISR_TEACK))
+			;
+
+		// Now try writing directly to UART registers
+		USART1->TDR = 'X';
+		// Simple delay
+		for (volatile int i = 0; i < 100000; i++)
+			;
+		USART1->TDR = 'Y';
+		for (volatile int i = 0; i < 100000; i++)
+			;
+		USART1->TDR = 'Z';
+		for (volatile int i = 0; i < 100000; i++)
+			;
+		USART1->TDR = '\r';
+		for (volatile int i = 0; i < 100000; i++)
+			;
+		USART1->TDR = '\n';
+	}
+
+	// Test UART with HAL functions
+	const char *init_msg = "UART INIT TEST: UART initialized successfully!\r\n";
+	HAL_StatusTypeDef status = HAL_UART_Transmit(&hlpuart1, (uint8_t *)init_msg, strlen(init_msg), 1000);
+
+	// Send individual characters to test
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)"A", 1, 1000);
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)"B", 1, 1000);
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)"C", 1, 1000);
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)"\r\n", 2, 1000);
+#endif
+
 	MX_USB_PCD_Init();
 	MX_TIM7_Init();
 	MX_TIM6_Init();
@@ -548,9 +584,13 @@ int main(void)
 	RAMN_DIAG_Init(xTaskGetTickCount(), &RAMN_DiagRXHandle, &UdsRxDataStreamBufferHandle, &KwpRxDataStreamBufferHandle, &XcpRxDataStreamBufferHandle);
 #endif
 
+#ifndef RENODE_SIM
 	RAMN_RNG_Init(&hrng);
+#endif
 	RAMN_CRC_Init(&hcrc);
+#ifndef RENODE_SIM
 	RAMN_FDCAN_Init(&hfdcan1, &RAMN_SendCANHandle, &RAMN_ErrorTaskHandle);
+#endif
 
 #ifdef USE_TRNG_BUFFER
 	// Enable TRNG module
@@ -664,7 +704,58 @@ int main(void)
 	/* USER CODE END RTOS_EVENTS */
 
 	/* Start scheduler */
+#ifdef RENODE_SIM
+	// Skip FreeRTOS on Renode for now - just test UART
+
+	// Try direct register writes first
+	USART1->TDR = 'S';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = 'T';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = 'A';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = 'R';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = 'T';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = '\r';
+	for (volatile int i = 0; i < 100000; i++)
+		;
+	USART1->TDR = '\n';
+
+	printf("Skipping FreeRTOS, testing UART in simple loop...\n");
+
+	// Test direct UART transmission
+	const char *test_msg = "Direct UART test message\r\n";
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)test_msg, strlen(test_msg), 1000);
+
+	int counter = 0;
+	while (1)
+	{
+		// Try direct register write in loop
+		USART1->TDR = '0' + (counter % 10);
+		for (volatile int i = 0; i < 500000; i++)
+			;
+
+		printf("UART test message #%d from main loop\r\n", counter++);
+
+		// Use simple delay loop instead of HAL_Delay
+		for (volatile int i = 0; i < 2000000; i++)
+		{
+			// Simple delay loop
+		}
+
+		if (counter > 10)
+			break; // Don't loop forever for testing
+	}
+#else
 	osKernelStart();
+#endif
 
 	/* We should never get here as control is now taken by the scheduler */
 
@@ -685,6 +776,10 @@ int main(void)
  */
 void SystemClock_Config(void)
 {
+	/* Bypass complex clock init on Renode to avoid HAL errors */
+#ifdef RENODE_SIM
+	return;
+#endif
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
 	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 	RCC_CRSInitTypeDef RCC_CRSInitStruct = {0};
@@ -1037,10 +1132,14 @@ static void MX_LPUART1_UART_Init(void)
 	hlpuart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
 	hlpuart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 	hlpuart1.FifoMode = UART_FIFOMODE_DISABLE;
+#ifndef RENODE_SIM
 	if (HAL_UART_Init(&hlpuart1) != HAL_OK)
 	{
 		Error_Handler();
 	}
+#else
+	(void)HAL_UART_Init(&hlpuart1); // On Renode, ignore return to avoid Error_Handler
+#endif
 #ifndef RENODE_SIM
 	if (HAL_UARTEx_SetTxFifoThreshold(&hlpuart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
 	{
@@ -1344,6 +1443,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+#ifdef ENABLE_UART
+// Redirect printf to UART
+int __io_putchar(int ch)
+{
+	HAL_UART_Transmit(&hlpuart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+#endif
 
 #ifdef ENABLE_I2C
 
