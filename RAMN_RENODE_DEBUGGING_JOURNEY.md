@@ -11,7 +11,7 @@ _Development Timeline: October 21, 2025_
 - STM32L552 Cortex-M33 emulation
 - FreeRTOS scheduler
 - UART debugging output  
-- CAN bus communication
+- CAN bus communicationhelp 
 - Automotive protocol testing (UDS, KWP2000)
 
 **Hardware Target:** STM32L552CETx (Cortex-M33) with FDCAN, multiple UARTs, and automotive peripherals
