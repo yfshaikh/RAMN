@@ -729,6 +729,8 @@ void SystemClock_Config(void)
 {
 	/* Bypass complex clock init on Renode to avoid HAL errors */
 #ifdef RENODE_SIM
+	/* Ensure USART1 uses a known clock source (HSI = 16 MHz) under Renode */
+	__HAL_RCC_USART1_CONFIG(RCC_USART1CLKSOURCE_HSI);
 	return;
 #endif
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
