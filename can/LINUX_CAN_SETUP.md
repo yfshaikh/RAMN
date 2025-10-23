@@ -18,19 +18,46 @@ sudo ip link set up vcan0
 ```
 
 #### 3) Launch Renode and bridge FDCAN to SocketCAN
-In the Renode monitor:
-```bash
-(monitor) emulation CreateCANHub "ramn_net"
-(monitor) connector Connect sysbus.fdcan1 ramn_net
-(monitor) connector Connect ramn_net socketcan:vcan0
+
+The platform definition (`.repl`) should already include the SocketCAN bridge. For example, in your `stm32l552_ramn_linux.repl`:
+
+```repl
+# FDCAN1 controller
+fdcan1: CAN.MCAN @ sysbus <0x4000A400, +0x400>
+    messageRAM: fdcan1_msgram
+    Line0 -> nvic@19
+
+# SocketCAN bridge (connects to host vcan0)
+socketcan: CAN.SocketCANBridge @ sysbus
+    canInterfaceName: "vcan0"
+    ensureFdFrames: false
+    ensureXlFrames: false
 ```
 
-Notes:
-- If your Renode expects a different URI, use `socketcan:can0` and create `can0` instead of `vcan0`.
-- Ensure the platform maps MCAN correctly:
-  - `fdcan1: CAN.MCAN @ sysbus <0x4000A400, +0x400>`
-  - `fdcan1_msgram: Memory.MappedMemory @ sysbus 0x4000AC00 { size: 0x400 }`
-  - `Line0 -> nvic@19`
+Then in your Renode script (`.resc`), create the CAN hub and connect both the MCU and the bridge:
+
+```bash
+# Create CAN hub
+(monitor) emulation CreateCANHub "canHub0"
+
+# Load platform with socketcan bridge
+(monitor) machine LoadPlatformDescription @/path/to/stm32l552_ramn_linux.repl
+(monitor) sysbus LoadELF @/path/to/RAMNV1.elf
+
+# Connect MCU FDCAN to hub
+(monitor) connector Connect sysbus.fdcan1 canHub0
+
+# Connect SocketCAN bridge to hub
+(monitor) connector Connect sysbus.socketcan canHub0
+
+# Start execution
+(monitor) start
+```
+
+**Notes:**
+- If `socketcan` is already defined in your `.repl` file, you don't need to create it manually
+- The bridge automatically connects to the `vcan0` interface defined in the `.repl`
+- Ensure the platform maps MCAN correctly with proper messageRAM and IRQ settings
 
 #### 4) Quick sanity checks
 - Observe traffic:
@@ -60,13 +87,18 @@ else:
 ```
 
 #### 6) Troubleshooting
-- No frames visible: check Renode connections with `connector ShowConnections`.
-- Flood of function logs: disable with `(monitor) cpu LogFunctionNames false`.
-- For real hardware-like `canX` devices (not vcan): set bitrate before `up`:
+- **"Given name 'socketcan' is already used"**: The bridge is already defined in your `.repl` file. Don't try to create it again.
+- **No frames visible**: Check Renode connections with `(monitor) connector ShowConnections`
+- **Flood of function logs**: Disable with `(monitor) cpu LogFunctionNames false`
+- **For real hardware-like `canX` devices** (not vcan): Set bitrate before `up`:
 ```bash
 sudo ip link set can0 type can bitrate 500000
 sudo ip link set up can0
 ```
-- If UART logs are missing, ignore; CAN I/O is independent of UART/printf.
+- **If UART logs are missing**: Ignore; CAN I/O is independent of UART/printf
+
+#### 7) References
+- [Renode CAN Integration (SocketCAN bridge)](https://renode.readthedocs.io/en/latest/host-integration/can.html)
+- [Antmicro: Demonstrating CAN support in Renode with SocketCAN and Wireshark](https://antmicro.com/blog/2024/11/demonstrating-can-support-in-renode/)
 
 
